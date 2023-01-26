@@ -1,0 +1,12 @@
+<h1>To Do List</h1>
+
+<input #newTask />
+<button (click)="store.addTask(newTask.value); newTask.value = ''">Add Task</button>
+
+<ng-container *ngFor="let task of (store.tasks$ | async); let i = index">
+  <div class="item-container">
+    <todo-item [task]="task" [count]="i + 1"></todo-item>
+  </div>
+</ng-container>
+
+
