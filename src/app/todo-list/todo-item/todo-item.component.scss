@@ -1,0 +1,15 @@
+:host {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  max-width: 35rem;
+}
+
+.actions {
+  button {
+    min-width: 5rem;
+
+    + button {
+      margin-left: .5rem;
+    }
+  }
+}
