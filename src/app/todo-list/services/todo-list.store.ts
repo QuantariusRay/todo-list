@@ -3,20 +3,21 @@ import { Injectable } from '@angular/core';
 import { ComponentStore, tapResponse } from '@ngrx/component-store';
 import { Observable } from 'rxjs';
 
-interface TodoListState {
+export interface TodoListState {
   tasks: Task[]
 }
 
 @Injectable()
 export class TodoListStore extends ComponentStore<TodoListState> {
 
-  public readonly tasks$: Observable<Task[]> = this.select((state) => state.tasks);
+  public readonly tasks$: Observable<Task[]> = this.select((state: TodoListState) => state.tasks);
 
   public readonly addTask = this.effect((description$: Observable<string>) =>
     description$.pipe(
       tapResponse((des) => {
-        const newList = [{ description: des, status: TaskType.pending, id: (this.get().tasks.length + 1) }, ...this.get().tasks]
-        this.updateTasks(newList);
+        this.updateTasks([
+          { description: des, status: TaskType.pending, id: Date.now() },
+          ...this.get().tasks]);
       },
         (err) => console.error(err)
       )
@@ -29,7 +30,6 @@ export class TodoListStore extends ComponentStore<TodoListState> {
         const task = this.get().tasks.find(task => task.id === taskToUpdate.task.id);
         if (task) {
           task.description = taskToUpdate.newDesc;
-          this.updateTasks([...this.get().tasks]);
         }
       },
         (err) => console.error(err)
@@ -40,9 +40,7 @@ export class TodoListStore extends ComponentStore<TodoListState> {
   public readonly removeTask = this.effect((id$: Observable<number>) =>
     id$.pipe(
       tapResponse(id => {
-        const newTaskList = this.get().tasks.filter(task => task.id !== id);
-
-        this.updateTasks(newTaskList);
+        this.updateTasks(this.get().tasks.filter(task => task.id !== id));
       },
         (err) => console.error(err))
     )
